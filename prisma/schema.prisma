@@ -1,0 +1,463 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Role {
+  OWNER
+  PROVIDER
+  ADMIN
+}
+
+enum Species {
+  DOG
+  CAT
+  BIRD
+  REPTILE
+  SMALL_MAMMAL
+  FISH
+  HORSE
+  OTHER
+}
+
+enum Sex {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
+enum ClinicStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum MembershipRole {
+  CLINIC_OWNER
+  STAFF
+}
+
+enum ServiceKind {
+  VET
+  SPECIALIST
+  GROOMING
+}
+
+enum ServiceMode {
+  ONLINE
+  IN_PERSON
+  HOME_VISIT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+  CANCELLED_BY_OWNER
+  CANCELLED_BY_PROVIDER
+  COMPLETED
+  NO_SHOW
+}
+
+enum AccessScope {
+  READ
+  READ_WRITE
+}
+
+// ---------------------------------------------------------------------------
+// Auth.js models
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          Role      @default(OWNER)
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts        Account[]
+  sessions        Session[]
+  pets            Pet[]
+  memberships     Membership[]
+  bookingsAsOwner Booking[]           @relation("BookingOwner")
+  bookingsAsStaff Booking[]           @relation("BookingStaff")
+  visitNotes      VisitNote[]
+  grantsGiven     RecordAccessGrant[]
+  documents       Document[]
+  verifiedClinics Clinic[]            @relation("ClinicVerifiedBy")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ---------------------------------------------------------------------------
+// Pets and health records
+// ---------------------------------------------------------------------------
+
+model Pet {
+  id          String    @id @default(cuid())
+  ownerId     String
+  name        String
+  species     Species
+  breed       String?
+  sex         Sex       @default(UNKNOWN)
+  birthDate   DateTime?
+  weightKg    Decimal?  @db.Decimal(6, 2)
+  color       String?
+  microchipId String?
+  photoUrl    String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  owner        User                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  vaccinations Vaccination[]
+  medications  Medication[]
+  conditions   Condition[]
+  visitNotes   VisitNote[]
+  documents    Document[]
+  bookings     Booking[]
+  accessGrants RecordAccessGrant[]
+
+  @@index([ownerId])
+}
+
+model Vaccination {
+  id             String    @id @default(cuid())
+  petId          String
+  name           String
+  administeredAt DateTime
+  expiresAt      DateTime?
+  lotNumber      String?
+  administeredBy String?
+  clinicId       String?
+  createdById    String?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  pet    Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic Clinic? @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+
+  @@index([petId, administeredAt])
+}
+
+model Medication {
+  id           String    @id @default(cuid())
+  petId        String
+  name         String
+  dosage       String
+  frequency    String
+  startDate    DateTime
+  endDate      DateTime?
+  prescribedBy String?
+  clinicId     String?
+  createdById  String?
+  active       Boolean   @default(true)
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  pet    Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic Clinic? @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+
+  @@index([petId, active])
+}
+
+model Condition {
+  id          String    @id @default(cuid())
+  petId       String
+  name        String
+  diagnosedAt DateTime?
+  resolvedAt  DateTime?
+  severity    String?
+  clinicId    String?
+  createdById String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  pet    Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic Clinic? @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+
+  @@index([petId])
+}
+
+model VisitNote {
+  id         String    @id @default(cuid())
+  petId      String
+  clinicId   String
+  authorId   String
+  bookingId  String?   @unique
+  visitedAt  DateTime
+  summary    String
+  diagnosis  String?
+  treatment  String?
+  followUpAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  pet     Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic  Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  author  User     @relation(fields: [authorId], references: [id])
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@index([petId, visitedAt])
+  @@index([clinicId])
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  petId        String
+  title        String
+  fileUrl      String
+  mimeType     String
+  sizeBytes    Int
+  uploadedById String
+  clinicId     String?
+  createdAt    DateTime @default(now())
+
+  pet        Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  uploadedBy User    @relation(fields: [uploadedById], references: [id])
+  clinic     Clinic? @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+
+  @@index([petId])
+}
+
+// ---------------------------------------------------------------------------
+// Clinics, staff, services
+// ---------------------------------------------------------------------------
+
+model Clinic {
+  id              String       @id @default(cuid())
+  slug            String       @unique
+  name            String
+  description     String?
+  email           String?
+  phone           String?
+  website         String?
+  addressLine1    String
+  addressLine2    String?
+  city            String
+  region          String?
+  postalCode      String?
+  country         String       @default("GB")
+  placeId         String?
+  lat             Float
+  lng             Float
+  timezone        String       @default("Europe/London")
+  status          ClinicStatus @default(PENDING)
+  verifiedAt      DateTime?
+  verifiedById    String?
+  rejectionReason String?
+  imageUrl        String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  verifiedBy   User?               @relation("ClinicVerifiedBy", fields: [verifiedById], references: [id], onDelete: SetNull)
+  memberships  Membership[]
+  services     Service[]
+  availability Availability[]
+  blocks       AvailabilityBlock[]
+  bookings     Booking[]
+  accessGrants RecordAccessGrant[]
+  visitNotes   VisitNote[]
+  vaccinations Vaccination[]
+  medications  Medication[]
+  conditions   Condition[]
+  documents    Document[]
+
+  @@index([lat, lng])
+  @@index([status])
+}
+
+model Membership {
+  id        String         @id @default(cuid())
+  userId    String
+  clinicId  String
+  role      MembershipRole @default(STAFF)
+  title     String?
+  active    Boolean        @default(true)
+  createdAt DateTime       @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clinicId])
+  @@index([clinicId, active])
+}
+
+model ServiceCategory {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  name      String
+  kind      ServiceKind
+  parentId  String?
+  sortOrder Int         @default(0)
+  icon      String?
+
+  parent   ServiceCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children ServiceCategory[] @relation("CategoryTree")
+  services Service[]
+}
+
+model Service {
+  id          String      @id @default(cuid())
+  clinicId    String
+  categoryId  String
+  name        String
+  description String?
+  priceCents  Int
+  currency    String      @default("GBP")
+  durationMin Int
+  bufferMin   Int         @default(0)
+  mode        ServiceMode
+  species     Species[]
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  clinic   Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  category ServiceCategory @relation(fields: [categoryId], references: [id])
+  bookings Booking[]
+
+  @@index([clinicId, active])
+  @@index([categoryId])
+}
+
+// ---------------------------------------------------------------------------
+// Availability and bookings
+// ---------------------------------------------------------------------------
+
+/// Weekly opening rule expressed in the clinic's local timezone.
+model Availability {
+  id           String  @id @default(cuid())
+  clinicId     String
+  staffId      String?
+  weekday      Int
+  startMinutes Int
+  endMinutes   Int
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, weekday])
+}
+
+/// Time off / closures, stored in UTC.
+model AvailabilityBlock {
+  id       String   @id @default(cuid())
+  clinicId String
+  staffId  String?
+  startsAt DateTime
+  endsAt   DateTime
+  reason   String?
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, startsAt, endsAt])
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  petId         String
+  ownerId       String
+  clinicId      String
+  serviceId     String
+  staffId       String?
+  startsAt      DateTime
+  endsAt        DateTime
+  status        BookingStatus @default(PENDING)
+  mode          ServiceMode
+  meetingUrl    String?
+  ownerNotes    String?
+  providerNotes String?
+  cancelReason  String?
+  priceCents    Int
+  currency      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  pet       Pet        @relation(fields: [petId], references: [id], onDelete: Cascade)
+  owner     User       @relation("BookingOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  clinic    Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  service   Service    @relation(fields: [serviceId], references: [id])
+  staff     User?      @relation("BookingStaff", fields: [staffId], references: [id], onDelete: SetNull)
+  visitNote VisitNote?
+
+  @@index([clinicId, startsAt])
+  @@index([ownerId, startsAt])
+  @@index([staffId, startsAt])
+  @@index([petId])
+}
+
+// ---------------------------------------------------------------------------
+// Record sharing
+// ---------------------------------------------------------------------------
+
+model RecordAccessGrant {
+  id          String      @id @default(cuid())
+  petId       String
+  clinicId    String
+  scope       AccessScope @default(READ_WRITE)
+  grantedById String
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime    @default(now())
+
+  pet       Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic    Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  grantedBy User   @relation(fields: [grantedById], references: [id])
+
+  @@index([petId, clinicId])
+  @@index([clinicId, revokedAt])
+}
