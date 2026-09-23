@@ -43,5 +43,7 @@ next-env.d.ts
 
 # petpass
 /uploads/*
+/test-results/
+/playwright-report/
 !/uploads/.gitkeep
 /src/generated/
