@@ -291,11 +291,11 @@ model Clinic {
   city            String
   region          String?
   postalCode      String?
-  country         String       @default("GB")
+  country         String       @default("PH")
   placeId         String?
   lat             Float
   lng             Float
-  timezone        String       @default("Europe/London")
+  timezone        String       @default("Asia/Manila")
   status          ClinicStatus @default(PENDING)
   verifiedAt      DateTime?
   verifiedById    String?
@@ -358,7 +358,7 @@ model Service {
   name        String
   description String?
   priceCents  Int
-  currency    String      @default("GBP")
+  currency    String      @default("PHP")
   durationMin Int
   bufferMin   Int         @default(0)
   mode        ServiceMode

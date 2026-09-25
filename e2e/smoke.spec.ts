@@ -11,12 +11,12 @@ async function login(page: Page, email: string) {
 }
 
 test("public search ranks the nearest clinic first and filters by category", async ({ page }) => {
-  await page.goto("/search?lat=51.539&lng=-0.1426");
+  await page.goto("/search?lat=14.5547&lng=121.0244");
   const names = page.locator("ol li p.font-semibold");
-  await expect(names.first()).toHaveText("Camden Paws Veterinary");
-  await page.goto("/search?lat=51.539&lng=-0.1426&category=exotic-reptile");
+  await expect(names.first()).toHaveText("Makati Paws Veterinary Clinic");
+  await page.goto("/search?lat=14.5547&lng=121.0244&category=exotic-reptile");
   await expect(names).toHaveCount(1);
-  await expect(names.first()).toHaveText("Shoreditch Exotics & Avian");
+  await expect(names.first()).toHaveText("Quezon City Exotics & Avian");
 });
 
 test("owner can book, clinic confirms with a meeting link, owner sees the join button", async ({ browser }) => {
@@ -24,7 +24,7 @@ test("owner can book, clinic confirms with a meeting link, owner sees the join b
   const owner = await ownerCtx.newPage();
   await login(owner, "owner@petpass.dev");
 
-  await owner.goto("/clinics/camden-paws-veterinary");
+  await owner.goto("/clinics/makati-paws-veterinary-clinic");
   await owner.locator("li:has-text('Online video consultation') a:has-text('Book')").click();
   await owner.waitForURL(/\/owner\/book\//);
 
@@ -74,8 +74,8 @@ test("record sharing gives a clinic access that revocation removes", async ({ br
   const petId = new URL(owner.url()).pathname.split("/").pop()!;
 
   await owner.goto(`/owner/pets/${petId}/sharing`);
-  const greenwich = await owner.locator("#clinicId option", { hasText: "Greenwich Grooming" }).getAttribute("value");
-  await owner.selectOption("#clinicId", greenwich!);
+  const pasig = await owner.locator("#clinicId option", { hasText: "Pasig Grooming" }).getAttribute("value");
+  await owner.selectOption("#clinicId", pasig!);
   await owner.click("button:has-text('Share records')");
   await expect(owner.getByText("Access granted")).toBeVisible();
 
@@ -85,8 +85,8 @@ test("record sharing gives a clinic access that revocation removes", async ({ br
   await clinic.goto("/provider/patients");
   await expect(clinic.getByText("Mochi")).toBeVisible();
 
-  await owner.click("li:has-text('Greenwich Grooming') button:has-text('Revoke')");
-  await expect(owner.locator("li:has-text('Greenwich Grooming') :text('Active')")).toHaveCount(0);
+  await owner.click("li:has-text('Pasig Grooming') button:has-text('Revoke')");
+  await expect(owner.locator("li:has-text('Pasig Grooming') :text('Active')")).toHaveCount(0);
   const res = await clinic.goto(`/provider/patients/${petId}`);
   expect(res?.status()).toBe(404);
 

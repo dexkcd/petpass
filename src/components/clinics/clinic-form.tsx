@@ -29,7 +29,7 @@ function timeZones() {
   try {
     return Intl.supportedValuesOf("timeZone");
   } catch {
-    return ["Europe/London", "Europe/Dublin", "Europe/Paris", "America/New_York", "America/Los_Angeles", "Australia/Sydney"];
+    return ["Asia/Manila", "Asia/Singapore", "Asia/Hong_Kong", "Asia/Tokyo", "Australia/Sydney", "America/Los_Angeles"];
   }
 }
 
@@ -50,7 +50,7 @@ export function ClinicForm({
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone;
     } catch {
-      return "Europe/London";
+      return "Asia/Manila";
     }
   }, []);
 
@@ -123,17 +123,17 @@ export function ClinicForm({
             <Field label="Address line 2" htmlFor="addressLine2" errors={errors?.addressLine2} className="sm:col-span-2">
               <Input id="addressLine2" name="addressLine2" value={addr.addressLine2 ?? ""} onChange={(e) => setAddr({ ...addr, addressLine2: e.target.value })} />
             </Field>
-            <Field label="City / town" htmlFor="city" errors={errors?.city}>
+            <Field label="City / municipality" htmlFor="city" errors={errors?.city}>
               <Input id="city" name="city" value={addr.city ?? ""} onChange={(e) => setAddr({ ...addr, city: e.target.value })} required />
             </Field>
-            <Field label="Region / county" htmlFor="region" errors={errors?.region}>
+            <Field label="Province / region" htmlFor="region" errors={errors?.region}>
               <Input id="region" name="region" value={addr.region ?? ""} onChange={(e) => setAddr({ ...addr, region: e.target.value })} />
             </Field>
-            <Field label="Postcode" htmlFor="postalCode" errors={errors?.postalCode}>
+            <Field label="ZIP code" htmlFor="postalCode" errors={errors?.postalCode}>
               <Input id="postalCode" name="postalCode" value={addr.postalCode ?? ""} onChange={(e) => setAddr({ ...addr, postalCode: e.target.value })} />
             </Field>
             <Field label="Country (2-letter code)" htmlFor="country" errors={errors?.country}>
-              <Input id="country" name="country" maxLength={2} value={addr.country ?? "GB"} onChange={(e) => setAddr({ ...addr, country: e.target.value.toUpperCase() })} />
+              <Input id="country" name="country" maxLength={2} value={addr.country ?? "PH"} onChange={(e) => setAddr({ ...addr, country: e.target.value.toUpperCase() })} />
             </Field>
             <Field label="Time zone" htmlFor="timezone" hint="Opening hours and bookings are shown in this zone." errors={errors?.timezone}>
               <Select id="timezone" name="timezone" defaultValue={initial?.timezone ?? browserZone}>

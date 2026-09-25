@@ -9,12 +9,16 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const db = new PrismaClient({ adapter });
 
 const DEMO_PASSWORD = "Password123!";
-const TZ = "Europe/London";
+const TZ = "Asia/Manila";
+const COUNTRY = "PH";
+const CURRENCY = "PHP";
 
 const day = 24 * 3600 * 1000;
-function daysFromNow(n: number, hourUtc = 10, minute = 0) {
+const TZ_OFFSET_HOURS = 8; // Asia/Manila has no daylight saving time
+/** An instant `n` days from now at the given clinic-local wall-clock time. */
+function daysFromNow(n: number, hourLocal = 10, minute = 0) {
   const d = new Date(Date.now() + n * day);
-  d.setUTCHours(hourUtc, minute, 0, 0);
+  d.setUTCHours(hourLocal - TZ_OFFSET_HOURS, minute, 0, 0);
   return d;
 }
 
@@ -74,106 +78,107 @@ type ClinicSeed = {
 
 const CLINICS: ClinicSeed[] = [
   {
-    slug: "camden-paws-veterinary",
-    name: "Camden Paws Veterinary",
-    description: "Friendly full-service small animal practice in the heart of Camden. Same-day online consultations, dental suite and in-house diagnostics.",
-    addressLine1: "12 Camden High Street",
-    city: "London",
-    postalCode: "NW1 0JH",
-    lat: 51.539,
-    lng: -0.1426,
-    phone: "+44 20 7946 0101",
+    slug: "makati-paws-veterinary-clinic",
+    name: "Makati Paws Veterinary Clinic",
+    description: "Full-service small animal practice along Ayala Avenue. Same-day online consultations, dental suite and in-house laboratory. Open late on weekdays for working pet parents.",
+    addressLine1: "6789 Ayala Avenue, Legazpi Village",
+    city: "Makati",
+    postalCode: "1229",
+    lat: 14.5547,
+    lng: 121.0244,
+    phone: "+63 2 8845 0101",
     status: "VERIFIED",
     ownerEmail: "provider1@petpass.dev",
-    ownerName: "Dr Amara Osei",
-    staff: [{ email: "staff1@petpass.dev", name: "Dr Ben Carter", title: "Veterinary surgeon" }],
+    ownerName: "Dr. Maria Santos",
+    staff: [{ email: "staff1@petpass.dev", name: "Dr. Paolo Reyes", title: "Veterinarian" }],
     saturday: true,
     services: [
-      { category: "general-vet", name: "Online video consultation", price: 35, durationMin: 20, mode: "ONLINE", description: "Speak to a vet from home. Ideal for advice, follow-ups and triage." },
-      { category: "general-vet", name: "General health check", price: 55, durationMin: 30, mode: "IN_PERSON" },
-      { category: "vaccination", name: "Annual vaccination", price: 48, durationMin: 20, mode: "IN_PERSON", species: ["DOG", "CAT"] },
-      { category: "dental", name: "Dental scale & polish", price: 320, durationMin: 90, bufferMin: 30, mode: "IN_PERSON", species: ["DOG", "CAT"] },
-      { category: "surgery", name: "Neutering consultation", price: 40, durationMin: 30, mode: "IN_PERSON", species: ["DOG", "CAT", "SMALL_MAMMAL"] },
-      { category: "diagnostics", name: "Blood panel", price: 120, durationMin: 30, mode: "IN_PERSON" },
+      { category: "general-vet", name: "Online video consultation", price: 500, durationMin: 20, mode: "ONLINE", description: "Talk to a vet from home. Ideal for advice, follow-ups and triage." },
+      { category: "general-vet", name: "General health check", price: 650, durationMin: 30, mode: "IN_PERSON" },
+      { category: "vaccination", name: "Annual vaccination (5-in-1 / 4-in-1)", price: 900, durationMin: 20, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "vaccination", name: "Anti-rabies vaccination", price: 350, durationMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "dental", name: "Dental scaling & polishing", price: 4500, durationMin: 90, bufferMin: 30, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "surgery", name: "Spay / neuter consultation", price: 400, durationMin: 30, mode: "IN_PERSON", species: ["DOG", "CAT", "SMALL_MAMMAL"] },
+      { category: "diagnostics", name: "Complete blood count & chemistry", price: 1800, durationMin: 30, mode: "IN_PERSON" },
     ],
   },
   {
-    slug: "shoreditch-exotics-avian",
-    name: "Shoreditch Exotics & Avian",
-    description: "Specialist care for reptiles, birds and small mammals. Species-appropriate husbandry advice, UVB and diet reviews, and beak/nail care.",
-    addressLine1: "88 Curtain Road",
-    city: "London",
-    postalCode: "EC2A 3AA",
-    lat: 51.5255,
-    lng: -0.0776,
-    phone: "+44 20 7946 0202",
+    slug: "quezon-city-exotics-avian",
+    name: "Quezon City Exotics & Avian",
+    description: "Specialist care for reptiles, birds and small mammals near Tomas Morato. Husbandry reviews, UVB and diet planning, beak and nail care.",
+    addressLine1: "123 Tomas Morato Avenue, South Triangle",
+    city: "Quezon City",
+    postalCode: "1103",
+    lat: 14.6329,
+    lng: 121.0355,
+    phone: "+63 2 8926 0202",
     status: "VERIFIED",
     ownerEmail: "provider2@petpass.dev",
-    ownerName: "Dr Priya Nair",
+    ownerName: "Dr. Angelo Cruz",
     services: [
-      { category: "exotic-reptile", name: "Reptile health check", price: 65, durationMin: 40, mode: "IN_PERSON", species: ["REPTILE"], description: "Full husbandry review including temperature, UVB and diet." },
-      { category: "exotic-reptile", name: "Online reptile husbandry advice", price: 30, durationMin: 20, mode: "ONLINE", species: ["REPTILE"] },
-      { category: "avian", name: "Bird wellness exam", price: 60, durationMin: 30, mode: "IN_PERSON", species: ["BIRD"] },
-      { category: "avian", name: "Beak & nail trim", price: 25, durationMin: 15, mode: "IN_PERSON", species: ["BIRD"] },
-      { category: "nutrition", name: "Small mammal diet consult", price: 45, durationMin: 30, mode: "IN_PERSON", species: ["SMALL_MAMMAL", "REPTILE", "BIRD"] },
+      { category: "exotic-reptile", name: "Reptile health check", price: 800, durationMin: 40, mode: "IN_PERSON", species: ["REPTILE"], description: "Full husbandry review including temperature, UVB and diet." },
+      { category: "exotic-reptile", name: "Online reptile husbandry advice", price: 400, durationMin: 20, mode: "ONLINE", species: ["REPTILE"] },
+      { category: "avian", name: "Bird wellness exam", price: 750, durationMin: 30, mode: "IN_PERSON", species: ["BIRD"] },
+      { category: "avian", name: "Beak & nail trim", price: 300, durationMin: 15, mode: "IN_PERSON", species: ["BIRD"] },
+      { category: "nutrition", name: "Small mammal diet consult", price: 600, durationMin: 30, mode: "IN_PERSON", species: ["SMALL_MAMMAL", "REPTILE", "BIRD"] },
     ],
   },
   {
-    slug: "battersea-rehab-behaviour",
-    name: "Battersea Rehab & Behaviour",
-    description: "Physiotherapy, hydrotherapy referrals and clinical behaviour therapy. Home visits across south-west London.",
-    addressLine1: "5 Battersea Park Road",
-    city: "London",
-    postalCode: "SW11 4NE",
-    lat: 51.479,
-    lng: -0.156,
-    phone: "+44 20 7946 0303",
+    slug: "bgc-rehab-behaviour",
+    name: "BGC Rehab & Behaviour",
+    description: "Physiotherapy, post-surgical rehab and clinical behaviour therapy in Bonifacio Global City. Home visits across Taguig, Makati and Pasig.",
+    addressLine1: "5th Avenue corner 26th Street, Bonifacio Global City",
+    city: "Taguig",
+    postalCode: "1634",
+    lat: 14.5515,
+    lng: 121.0473,
+    phone: "+63 2 8856 0303",
     status: "VERIFIED",
     ownerEmail: "provider3@petpass.dev",
-    ownerName: "Jo Whitfield",
+    ownerName: "Jasmine Villanueva",
     services: [
-      { category: "physical-therapy", name: "Physiotherapy session (home visit)", price: 85, durationMin: 60, bufferMin: 30, mode: "HOME_VISIT", species: ["DOG", "CAT", "HORSE"], description: "Post-surgical rehab, arthritis management and mobility work in your pet's own space." },
-      { category: "physical-therapy", name: "Physiotherapy session (clinic)", price: 70, durationMin: 45, bufferMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT"] },
-      { category: "behaviour", name: "Behaviour assessment (online)", price: 90, durationMin: 60, mode: "ONLINE", species: ["DOG", "CAT"] },
-      { category: "behaviour", name: "Behaviour follow-up", price: 60, durationMin: 45, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "physical-therapy", name: "Physiotherapy session (home visit)", price: 1500, durationMin: 60, bufferMin: 30, mode: "HOME_VISIT", species: ["DOG", "CAT", "HORSE"], description: "Post-surgical rehab, arthritis management and mobility work in your pet's own space." },
+      { category: "physical-therapy", name: "Physiotherapy session (clinic)", price: 1200, durationMin: 45, bufferMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "behaviour", name: "Behaviour assessment (online)", price: 1500, durationMin: 60, mode: "ONLINE", species: ["DOG", "CAT"] },
+      { category: "behaviour", name: "Behaviour follow-up", price: 900, durationMin: 45, mode: "IN_PERSON", species: ["DOG", "CAT"] },
     ],
   },
   {
-    slug: "greenwich-grooming-studio",
-    name: "Greenwich Grooming Studio",
-    description: "Calm, cage-free grooming for dogs and cats. Breed-standard cuts, de-shedding and puppy introductions.",
-    addressLine1: "21 Greenwich Church Street",
-    city: "London",
-    postalCode: "SE10 9BJ",
-    lat: 51.4826,
-    lng: -0.0077,
-    phone: "+44 20 7946 0404",
+    slug: "pasig-grooming-studio",
+    name: "Pasig Grooming Studio",
+    description: "Calm, cage-free grooming for dogs and cats in Kapitolyo. Breed-standard cuts, de-shedding and puppy introductions.",
+    addressLine1: "45 East Capitol Drive, Kapitolyo",
+    city: "Pasig",
+    postalCode: "1603",
+    lat: 14.5701,
+    lng: 121.0603,
+    phone: "+63 2 8631 0404",
     status: "VERIFIED",
     ownerEmail: "provider4@petpass.dev",
-    ownerName: "Marcus Lee",
+    ownerName: "Miguel Tan",
     saturday: true,
     services: [
-      { category: "bath", name: "Bath & blow dry", price: 35, durationMin: 60, bufferMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT"] },
-      { category: "haircut", name: "Full groom", price: 60, durationMin: 120, bufferMin: 15, mode: "IN_PERSON", species: ["DOG"] },
-      { category: "nail-trim", name: "Nail trim", price: 12, durationMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT", "SMALL_MAMMAL"] },
-      { category: "deshedding", name: "De-shedding treatment", price: 45, durationMin: 75, mode: "IN_PERSON", species: ["DOG", "CAT"] },
-      { category: "teeth-cleaning", name: "Cosmetic teeth cleaning", price: 20, durationMin: 20, mode: "IN_PERSON", species: ["DOG"] },
+      { category: "bath", name: "Bath & blow dry", price: 450, durationMin: 60, bufferMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "haircut", name: "Full groom", price: 900, durationMin: 120, bufferMin: 15, mode: "IN_PERSON", species: ["DOG"] },
+      { category: "nail-trim", name: "Nail trim", price: 150, durationMin: 15, mode: "IN_PERSON", species: ["DOG", "CAT", "SMALL_MAMMAL"] },
+      { category: "deshedding", name: "De-shedding treatment", price: 650, durationMin: 75, mode: "IN_PERSON", species: ["DOG", "CAT"] },
+      { category: "teeth-cleaning", name: "Cosmetic teeth cleaning", price: 300, durationMin: 20, mode: "IN_PERSON", species: ["DOG"] },
     ],
   },
   {
-    slug: "islington-vets",
-    name: "Islington Vets",
-    description: "New neighbourhood practice opening soon.",
-    addressLine1: "40 Upper Street",
-    city: "London",
-    postalCode: "N1 0PN",
-    lat: 51.5362,
-    lng: -0.103,
-    phone: "+44 20 7946 0505",
+    slug: "mandaluyong-vets",
+    name: "Mandaluyong Vets",
+    description: "New neighbourhood practice near Shaw Boulevard opening soon.",
+    addressLine1: "88 Shaw Boulevard, Pleasant Hills",
+    city: "Mandaluyong",
+    postalCode: "1552",
+    lat: 14.5836,
+    lng: 121.0326,
+    phone: "+63 2 8535 0505",
     status: "PENDING",
     ownerEmail: "provider5@petpass.dev",
-    ownerName: "Dr Hannah Reid",
-    services: [{ category: "general-vet", name: "General consultation", price: 50, durationMin: 30, mode: "IN_PERSON" }],
+    ownerName: "Dr. Hannah Lim",
+    services: [{ category: "general-vet", name: "General consultation", price: 600, durationMin: 30, mode: "IN_PERSON" }],
   },
 ];
 
@@ -181,8 +186,8 @@ async function seedDemo(categoryIds: Map<string, string>) {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
 
   const admin = await upsertUser("admin@petpass.dev", "PetPass Admin", "ADMIN", passwordHash);
-  const owner = await upsertUser("owner@petpass.dev", "Sam Taylor", "OWNER", passwordHash);
-  const owner2 = await upsertUser("owner2@petpass.dev", "Riley Chen", "OWNER", passwordHash);
+  const owner = await upsertUser("owner@petpass.dev", "Sam Dela Cruz", "OWNER", passwordHash);
+  const owner2 = await upsertUser("owner2@petpass.dev", "Riley Bautista", "OWNER", passwordHash);
 
   const clinicsBySlug = new Map<string, { id: string; ownerId: string; staffIds: string[] }>();
   for (const c of CLINICS) {
@@ -195,7 +200,7 @@ async function seedDemo(categoryIds: Map<string, string>) {
         addressLine1: c.addressLine1,
         city: c.city,
         postalCode: c.postalCode,
-        country: "GB",
+        country: COUNTRY,
         lat: c.lat,
         lng: c.lng,
         phone: c.phone,
@@ -211,7 +216,7 @@ async function seedDemo(categoryIds: Map<string, string>) {
         addressLine1: c.addressLine1,
         city: c.city,
         postalCode: c.postalCode,
-        country: "GB",
+        country: COUNTRY,
         lat: c.lat,
         lng: c.lng,
         phone: c.phone,
@@ -250,7 +255,7 @@ async function seedDemo(categoryIds: Map<string, string>) {
         name: s.name,
         description: s.description ?? null,
         priceCents: Math.round(s.price * 100),
-        currency: "GBP",
+        currency: CURRENCY,
         durationMin: s.durationMin,
         bufferMin: s.bufferMin ?? 0,
         mode: s.mode,
@@ -270,10 +275,10 @@ async function seedDemo(categoryIds: Map<string, string>) {
     clinicsBySlug.set(c.slug, { id: clinic.id, ownerId: clinicOwner.id, staffIds });
   }
 
-  // A block next week at Camden (afternoon off)
-  const camden = clinicsBySlug.get("camden-paws-veterinary")!;
-  const shoreditch = clinicsBySlug.get("shoreditch-exotics-avian")!;
-  const greenwich = clinicsBySlug.get("greenwich-grooming-studio")!;
+  // A block next week at Makati (afternoon off)
+  const camden = clinicsBySlug.get("makati-paws-veterinary-clinic")!;
+  const shoreditch = clinicsBySlug.get("quezon-city-exotics-avian")!;
+  const greenwich = clinicsBySlug.get("pasig-grooming-studio")!;
   await db.availabilityBlock.deleteMany({ where: { clinicId: camden.id } });
   await db.availabilityBlock.create({
     data: { clinicId: camden.id, startsAt: daysFromNow(7, 13), endsAt: daysFromNow(7, 17), reason: "Team training" },
@@ -287,7 +292,7 @@ async function seedDemo(categoryIds: Map<string, string>) {
   }
   const biscuit = await upsertPet(owner.id, "Biscuit", {
     species: "DOG",
-    breed: "Labrador Retriever",
+    breed: "Aspin (Labrador mix)",
     sex: "MALE",
     birthDate: new Date("2021-04-10"),
     weightKg: 29.4,
@@ -297,7 +302,7 @@ async function seedDemo(categoryIds: Map<string, string>) {
   });
   const mochi = await upsertPet(owner.id, "Mochi", {
     species: "CAT",
-    breed: "British Shorthair",
+    breed: "Puspin",
     sex: "FEMALE",
     birthDate: new Date("2019-11-02"),
     weightKg: 4.6,
@@ -311,20 +316,20 @@ async function seedDemo(categoryIds: Map<string, string>) {
     weightKg: 0.42,
     notes: "Basking spot 40°C, UVB tube replaced March.",
   });
-  await upsertPet(owner2.id, "Pepper", { species: "DOG", breed: "Cockapoo", sex: "FEMALE", birthDate: new Date("2022-01-20") });
+  await upsertPet(owner2.id, "Pepper", { species: "DOG", breed: "Shih Tzu", sex: "FEMALE", birthDate: new Date("2022-01-20") });
 
   // Records for Biscuit
   await db.vaccination.deleteMany({ where: { petId: biscuit.id } });
   await db.vaccination.createMany({
     data: [
-      { petId: biscuit.id, name: "DHPP booster", administeredAt: new Date(Date.now() - 340 * day), expiresAt: new Date(Date.now() + 20 * day), clinicId: camden.id, createdById: camden.ownerId, administeredBy: "Camden Paws Veterinary" },
-      { petId: biscuit.id, name: "Rabies", administeredAt: new Date(Date.now() - 400 * day), expiresAt: new Date(Date.now() + 695 * day), clinicId: camden.id, createdById: camden.ownerId, administeredBy: "Camden Paws Veterinary" },
+      { petId: biscuit.id, name: "DHPP booster", administeredAt: new Date(Date.now() - 340 * day), expiresAt: new Date(Date.now() + 20 * day), clinicId: camden.id, createdById: camden.ownerId, administeredBy: "Makati Paws Veterinary Clinic" },
+      { petId: biscuit.id, name: "Rabies", administeredAt: new Date(Date.now() - 400 * day), expiresAt: new Date(Date.now() + 695 * day), clinicId: camden.id, createdById: camden.ownerId, administeredBy: "Makati Paws Veterinary Clinic" },
       { petId: biscuit.id, name: "Leptospirosis", administeredAt: new Date(Date.now() - 100 * day), expiresAt: new Date(Date.now() + 265 * day), createdById: owner.id },
     ],
   });
   await db.medication.deleteMany({ where: { petId: biscuit.id } });
   await db.medication.create({
-    data: { petId: biscuit.id, name: "Apoquel", dosage: "16 mg", frequency: "Once daily", startDate: new Date(Date.now() - 30 * day), prescribedBy: "Dr Amara Osei", clinicId: camden.id, createdById: camden.ownerId, active: true },
+    data: { petId: biscuit.id, name: "Apoquel", dosage: "16 mg", frequency: "Once daily", startDate: new Date(Date.now() - 30 * day), prescribedBy: "Dr. Maria Santos", clinicId: camden.id, createdById: camden.ownerId, active: true },
   });
   await db.condition.deleteMany({ where: { petId: biscuit.id } });
   await db.condition.create({
@@ -403,7 +408,18 @@ async function seedDemo(categoryIds: Map<string, string>) {
   console.log(`Demo password for all accounts: ${DEMO_PASSWORD}`);
 }
 
+/** Wipe every application table. Only for demo databases (SEED_RESET=true). */
+async function resetDatabase() {
+  const tables = await db.$queryRaw<Array<{ tablename: string }>>`
+    SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> '_prisma_migrations'`;
+  if (tables.length === 0) return;
+  const list = tables.map((t) => `"${t.tablename}"`).join(", ");
+  await db.$executeRawUnsafe(`TRUNCATE TABLE ${list} RESTART IDENTITY CASCADE`);
+  console.log(`Reset ${tables.length} tables (SEED_RESET=true)`);
+}
+
 async function main() {
+  if ((process.env.SEED_RESET ?? "false").toLowerCase() === "true") await resetDatabase();
   const categoryIds = await seedCategories();
   const demo = (process.env.SEED_DEMO ?? "true").toLowerCase() !== "false";
   if (demo) await seedDemo(categoryIds);

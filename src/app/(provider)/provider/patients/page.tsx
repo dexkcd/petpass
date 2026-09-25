@@ -3,6 +3,7 @@ import { PetCard } from "@/components/pets/pet-card";
 import { EmptyState, PageHeader } from "@/components/ui/card";
 import { db } from "@/lib/db";
 import { requireProviderClinic } from "@/lib/provider";
+import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Patients" };
 
@@ -28,7 +29,7 @@ export default async function PatientsPage() {
               <PetCard pet={g.pet} href={`/provider/patients/${g.pet.id}`} />
               <p className="mt-1 px-1 text-xs text-muted">
                 Owner: {g.pet.owner.name ?? "—"} · {g.scope === "READ_WRITE" ? "view & add" : "view only"}
-                {g.expiresAt ? ` · until ${g.expiresAt.toLocaleDateString("en-GB")}` : ""}
+                {g.expiresAt ? ` · until ${formatDate(g.expiresAt)}` : ""}
               </p>
             </div>
           ))}

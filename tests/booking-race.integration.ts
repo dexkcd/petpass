@@ -18,7 +18,7 @@ async function attempt(clinicId: string, petId: string, ownerId: string, service
       });
       if (clash > 0) throw new Error("taken");
       const b = await tx.booking.create({
-        data: { petId, ownerId, clinicId, serviceId, startsAt, endsAt, mode: "ONLINE", priceCents: 0, currency: "GBP" },
+        data: { petId, ownerId, clinicId, serviceId, startsAt, endsAt, mode: "ONLINE", priceCents: 0, currency: "PHP" },
       });
       return b.id;
     });
@@ -28,7 +28,7 @@ async function attempt(clinicId: string, petId: string, ownerId: string, service
 }
 
 async function main() {
-  const clinic = await db.clinic.findUniqueOrThrow({ where: { slug: "camden-paws-veterinary" } });
+  const clinic = await db.clinic.findUniqueOrThrow({ where: { slug: "makati-paws-veterinary-clinic" } });
   const service = await db.service.findFirstOrThrow({ where: { clinicId: clinic.id } });
   const pet = await db.pet.findFirstOrThrow({ where: { name: "Biscuit", deletedAt: null } });
   const startsAt = new Date("2030-01-07T09:00:00Z");

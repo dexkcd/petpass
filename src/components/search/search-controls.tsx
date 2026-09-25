@@ -73,7 +73,7 @@ export function SearchControls({ categories, hasLocation }: { categories: Catego
           </Button>
         </div>
         {geoError ? <p className="text-xs text-danger">{geoError}</p> : null}
-        {!hasLocation ? <p className="text-xs text-muted">Showing central London until you share or search a location.</p> : null}
+        {!hasLocation ? <p className="text-xs text-muted">Showing Metro Manila until you share or search a location.</p> : null}
 
         <div className="flex flex-wrap gap-2">
           <button

@@ -87,5 +87,6 @@ export async function searchNearbyClinics(query: NearbyQuery): Promise<NearbyCli
     .map((r) => ({ ...r, distanceKm: Number(r.distanceKm), serviceCount: Number(r.serviceCount) }));
 }
 
-/** Default map centre when the visitor has not shared a location (central London). */
-export const DEFAULT_CENTER = { lat: 51.5074, lng: -0.1278 };
+/** Default map centre when the visitor has not shared a location (Metro Manila). */
+export const DEFAULT_CENTER = { lat: 14.5995, lng: 120.9842 };
+export const DEFAULT_TIMEZONE = "Asia/Manila";

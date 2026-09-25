@@ -1,34 +1,34 @@
 import { describe, expect, it } from "vitest";
 import { boundingBox, haversineKm } from "@/lib/geo/haversine";
 
-const camden = { lat: 51.539, lng: -0.1426 };
-const greenwich = { lat: 51.4826, lng: -0.0077 };
+const makati = { lat: 14.5547, lng: 121.0244 };
+const quezonCity = { lat: 14.6329, lng: 121.0355 };
 
 describe("haversineKm", () => {
   it("returns 0 for the same point", () => {
-    expect(haversineKm(camden, camden)).toBe(0);
+    expect(haversineKm(makati, makati)).toBe(0);
   });
-  it("measures Camden to Greenwich at roughly 11 km", () => {
-    const d = haversineKm(camden, greenwich);
-    expect(d).toBeGreaterThan(10.5);
-    expect(d).toBeLessThan(12);
+  it("measures Makati to Quezon City at roughly 9 km", () => {
+    const d = haversineKm(makati, quezonCity);
+    expect(d).toBeGreaterThan(8);
+    expect(d).toBeLessThan(10);
   });
   it("is symmetric", () => {
-    expect(haversineKm(camden, greenwich)).toBeCloseTo(haversineKm(greenwich, camden), 9);
+    expect(haversineKm(makati, quezonCity)).toBeCloseTo(haversineKm(quezonCity, makati), 9);
   });
 });
 
 describe("boundingBox", () => {
   it("contains points within the radius", () => {
-    const box = boundingBox(camden, 15);
-    expect(greenwich.lat).toBeGreaterThan(box.minLat);
-    expect(greenwich.lat).toBeLessThan(box.maxLat);
-    expect(greenwich.lng).toBeGreaterThan(box.minLng);
-    expect(greenwich.lng).toBeLessThan(box.maxLng);
+    const box = boundingBox(makati, 15);
+    expect(quezonCity.lat).toBeGreaterThan(box.minLat);
+    expect(quezonCity.lat).toBeLessThan(box.maxLat);
+    expect(quezonCity.lng).toBeGreaterThan(box.minLng);
+    expect(quezonCity.lng).toBeLessThan(box.maxLng);
   });
   it("excludes points well outside the radius", () => {
-    const box = boundingBox(camden, 5);
-    expect(greenwich.lng > box.maxLng || greenwich.lat < box.minLat).toBe(true);
+    const box = boundingBox(makati, 5);
+    expect(quezonCity.lat > box.maxLat || quezonCity.lng > box.maxLng).toBe(true);
   });
   it("widens longitude at higher latitudes", () => {
     const equator = boundingBox({ lat: 0, lng: 0 }, 10);

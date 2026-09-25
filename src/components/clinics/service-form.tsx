@@ -72,7 +72,7 @@ export function ServiceForm({
         </Field>
         <Field label="Price" htmlFor="price" errors={errors?.price}>
           <div className="flex gap-2">
-            <Input id="currency" name="currency" defaultValue={initial?.currency ?? "GBP"} maxLength={3} className="w-20 uppercase" />
+            <Input id="currency" name="currency" defaultValue={initial?.currency ?? "PHP"} maxLength={3} className="w-20 uppercase" />
             <Input id="price" name="price" type="number" step="0.01" min="0" defaultValue={initial?.priceCents !== undefined ? (initial.priceCents / 100).toFixed(2) : ""} required />
           </div>
         </Field>

@@ -34,7 +34,7 @@ function toSelection(place: google.maps.places.Place): PlaceSelection | null {
     lng: loc.lng(),
     formattedAddress: place.formattedAddress ?? "",
     addressLine1: [streetNumber, route].filter(Boolean).join(" ") || place.displayName || undefined,
-    city: pick(comps, "postal_town") ?? pick(comps, "locality") ?? pick(comps, "sublocality"),
+    city: pick(comps, "locality") ?? pick(comps, "postal_town") ?? pick(comps, "administrative_area_level_2") ?? pick(comps, "sublocality"),
     region: pick(comps, "administrative_area_level_1"),
     postalCode: pick(comps, "postal_code"),
     country: pick(comps, "country", true),

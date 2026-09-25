@@ -36,12 +36,14 @@ Demo accounts (password `Password123!`):
 | Account | Role |
 |---|---|
 | owner@petpass.dev | Pet owner with Biscuit (dog), Mochi (cat) and Rex (bearded dragon) |
-| provider1@petpass.dev / staff1@petpass.dev | Camden Paws Veterinary (owner / staff) |
-| provider2@petpass.dev | Shoreditch Exotics & Avian |
-| provider3@petpass.dev | Battersea Rehab & Behaviour |
-| provider4@petpass.dev | Greenwich Grooming Studio |
-| provider5@petpass.dev | Islington Vets (pending verification) |
+| provider1@petpass.dev / staff1@petpass.dev | Makati Paws Veterinary Clinic (owner / staff) |
+| provider2@petpass.dev | Quezon City Exotics & Avian |
+| provider3@petpass.dev | BGC Rehab & Behaviour |
+| provider4@petpass.dev | Pasig Grooming Studio |
+| provider5@petpass.dev | Mandaluyong Vets (pending verification) |
 | admin@petpass.dev | Admin |
+
+The app is set up for the Philippines: prices in PHP, clinics default to the `Asia/Manila` time zone and `PH` addresses, and search centres on Metro Manila until a location is shared. The demo data covers Makati, Quezon City, BGC, Pasig and Mandaluyong.
 
 Without Google Maps keys the app still works: the map shows a placeholder, address search falls back to typed addresses with manual coordinates, and search accepts a latitude/longitude.
 
@@ -70,6 +72,8 @@ See `.env.example` for every variable. The important ones:
 | `GOOGLE_MAPS_SERVER_KEY` | Optional. Server key with the Geocoding API enabled, used when a clinic saves its address. |
 | `UPLOADS_DIR` | Directory for uploaded pet documents. Use a persistent volume in production. |
 | `SEED_DEMO` | `true` seeds demo accounts and clinics; set `false` to seed only the service taxonomy. |
+| `SEED_RESET` | `true` truncates every table before seeding. Demo databases only. |
+| `RUN_SEED_ON_START` | `true` runs the seed after migrations when the container starts (Docker/Railway). Turn it off after the first boot. |
 
 ### Google Cloud setup
 

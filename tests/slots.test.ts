@@ -71,6 +71,12 @@ describe("generateSlots", () => {
     expect(slots).toHaveLength(5);
   });
 
+  it("converts Asia/Manila hours (UTC+8, no DST) correctly", () => {
+    const slots = generateSlots({ ...base, timezone: "Asia/Manila", date: monday });
+    expect(hh(slots[0])).toBe("01:00"); // 09:00 local
+    expect(hh(slots[slots.length - 1])).toBe("03:30"); // 11:30 local
+  });
+
   it("does not return a slot that would run past closing", () => {
     const slots = generateSlots({ ...base, date: monday, durationMin: 120 }).map(hh);
     expect(slots[slots.length - 1]).toBe("09:00"); // 10:00-12:00 local
