@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ClientErrorReporter } from "@/components/monitoring/client-error-reporter";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import "./globals.css";
 
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}
+        <ClientErrorReporter />
         <ServiceWorkerRegister />
       </body>
     </html>

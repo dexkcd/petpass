@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { MapsProvider } from "@/components/maps/maps-provider";
 import { SearchResults } from "@/components/search/results-list";
 import { SearchControls } from "@/components/search/search-controls";
 import { EmptyState } from "@/components/ui/card";
@@ -29,16 +30,18 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       <p className="mb-4 text-sm text-muted">
         {sp.place ? `Near ${sp.place}` : hasLocation ? "Near your location" : "Vets, groomers and specialists"} · {clinics.length} result{clinics.length === 1 ? "" : "s"}
       </p>
-      <div className="mb-6">
-        <Suspense>
-          <SearchControls categories={categories} hasLocation={hasLocation} />
-        </Suspense>
-      </div>
-      {clinics.length === 0 ? (
-        <EmptyState title="No clinics match" description="Try a wider radius, a different category, or another location." />
-      ) : (
-        <SearchResults clinics={clinics} center={{ lat: query.lat, lng: query.lng }} />
-      )}
+      <MapsProvider>
+        <div className="mb-6">
+          <Suspense>
+            <SearchControls categories={categories} hasLocation={hasLocation} />
+          </Suspense>
+        </div>
+        {clinics.length === 0 ? (
+          <EmptyState title="No clinics match" description="Try a wider radius, a different category, or another location." />
+        ) : (
+          <SearchResults clinics={clinics} center={{ lat: query.lat, lng: query.lng }} />
+        )}
+      </MapsProvider>
     </main>
   );
 }

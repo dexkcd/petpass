@@ -69,6 +69,7 @@ See `.env.example` for every variable. The important ones:
 | `AUTH_URL` | **Must be the public URL of the app** (e.g. `https://petpass.up.railway.app`). Auth.js derives redirect URLs from it; a mismatch sends users to the wrong host after login. |
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Optional. Google OAuth client. Authorised redirect URI: `<AUTH_URL>/api/auth/callback/google` |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Optional. Browser key restricted by HTTP referrer, with Maps JavaScript API and Places API (New) enabled. Baked in at build time. |
+| `NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID` | Optional. Map ID from Google Cloud Map Management, used for Advanced Markers. Falls back to Google's `DEMO_MAP_ID`. |
 | `GOOGLE_MAPS_SERVER_KEY` | Optional. Server key with the Geocoding API enabled, used when a clinic saves its address. |
 | `UPLOADS_DIR` | Directory for uploaded pet documents. Use a persistent volume in production. |
 | `SEED_DEMO` | `true` seeds demo accounts and clinics; set `false` to seed only the service taxonomy. |
@@ -105,4 +106,6 @@ The repo ships a multi-stage `Dockerfile` and `railway.json`. On start the conta
 - Record access is a pure, unit-tested decision (`decidePetAccess`): owners always read/write; admins read; providers act through an active grant to a clinic they belong to (`READ` or `READ_WRITE`).
 - Availability is stored as weekly rules in the clinic's time zone plus UTC time-off blocks. `generateSlots` converts each boundary independently, so daylight-saving days are handled, and removes bookings (with service buffers) and blocks. Booking creation re-validates the slot and takes a per-clinic advisory lock inside a transaction to prevent double booking.
 - Booking status changes follow a table in `src/lib/booking/transitions.ts` that encodes who may do what and when (for example owners can cancel online only up to 24 hours before).
+- Browser crashes are reported to `POST /api/client-errors` and appear in the server log as lines starting with `[client-error]` (in Railway: the service's deploy logs). Errors from browser extensions are ignored.
+- On clinic pages the interactive map loads only when the visitor taps "Show map"; maps use cooperative gestures so one-finger swipes scroll the page on phones.
 - Uploaded documents are served through `GET /api/documents/[id]`, which applies the same access rules as the record pages.

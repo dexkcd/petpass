@@ -22,7 +22,10 @@ export function SearchResults({ clinics, center }: { clinics: NearbyClinic[]; ce
           <li key={c.id}>
             <Link
               href={`/clinics/${c.slug}`}
-              onMouseEnter={() => setSelected(c.id)}
+              onPointerEnter={(e) => {
+                // Highlight on mouse hover only; on touch screens this would re-render the map mid-tap.
+                if (e.pointerType === "mouse") setSelected(c.id);
+              }}
               className={`block rounded-xl border bg-card p-4 shadow-sm transition hover:border-primary ${selected === c.id ? "border-primary" : "border-border"}`}
             >
               <div className="flex items-start justify-between gap-2">

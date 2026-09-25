@@ -6,12 +6,12 @@ const isDev = process.env.NODE_ENV !== "production";
 // and connect access to Google hosts; Next.js dev tooling needs eval.
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://maps.googleapis.com https://maps.gstatic.com`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://*.googleapis.com https://*.gstatic.com https://*.google.com blob:`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.googleusercontent.com https://*.ggpht.com",
+  "img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.googleusercontent.com https://*.ggpht.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  "connect-src 'self' https://maps.googleapis.com https://*.googleapis.com https://*.gstatic.com",
-  "frame-src 'self' https://www.google.com https://accounts.google.com",
+  "connect-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com",
+  "frame-src 'self' https://*.google.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",

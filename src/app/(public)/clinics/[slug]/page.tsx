@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ClinicMap } from "@/components/maps/clinic-map";
+import { LazyClinicMap } from "@/components/maps/lazy-clinic-map";
 import { ButtonLink } from "@/components/ui/button";
 import { Alert, Badge, Card, CardTitle } from "@/components/ui/card";
 import { getSessionUser } from "@/lib/auth-helpers";
@@ -128,7 +128,7 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
           )}
         </div>
         <div className="space-y-4">
-          <ClinicMap clinics={[{ id: clinic.id, slug: clinic.slug, name: clinic.name, lat: clinic.lat, lng: clinic.lng }]} center={{ lat: clinic.lat, lng: clinic.lng }} className="h-56" />
+          <LazyClinicMap clinic={{ id: clinic.id, slug: clinic.slug, name: clinic.name, lat: clinic.lat, lng: clinic.lng }} address={address} />
           <Card>
             <CardTitle>Opening hours</CardTitle>
             <dl className="mt-2 grid grid-cols-[6rem_1fr] gap-y-1 text-sm">
