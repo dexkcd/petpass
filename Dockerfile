@@ -35,7 +35,7 @@ FROM base AS migrate
 WORKDIR /app/migrate
 RUN npm init -y >/dev/null \
   && npm install --no-audit --no-fund --omit=dev \
-       prisma@7.10.0 @prisma/client@7.10.0 @prisma/adapter-pg@7.10.0 pg@8.23.0 dotenv@18.0.3 tsx@4.23.15
+       prisma@7.10.0 @prisma/client@7.10.0 @prisma/adapter-pg@7.10.0 pg@8.23.0 dotenv@18.0.3 tsx@4.23.15 bcryptjs@3.0.3
 COPY prisma ./prisma
 COPY prisma.config.ts ./prisma.config.ts
 COPY src/lib/categories.ts ./src/lib/categories.ts
