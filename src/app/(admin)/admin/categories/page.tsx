@@ -4,6 +4,9 @@ import { CategoryForm } from "@/components/admin/category-form";
 import { Card, CardTitle, PageHeader } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { db } from "@/lib/db";
+
+// Admin data comes from the database; never prerender at build time.
+export const dynamic = "force-dynamic";
 import { KIND_LABELS } from "@/lib/labels";
 
 export const metadata: Metadata = { title: "Service categories" };

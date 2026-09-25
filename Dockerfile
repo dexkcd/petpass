@@ -25,6 +25,9 @@ ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 ARG NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+# prisma.config.ts requires DATABASE_URL just to load; generation and the
+# Next.js build never connect, so a placeholder is enough at image-build time.
+ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
 RUN pnpm exec prisma generate && pnpm exec next build
 
 # ---- migration toolchain (flat npm install, independent of pnpm layout) ----
@@ -36,7 +39,10 @@ RUN npm init -y >/dev/null \
 COPY prisma ./prisma
 COPY prisma.config.ts ./prisma.config.ts
 COPY src/lib/categories.ts ./src/lib/categories.ts
-COPY src/generated ./src/generated
+# Generate the client here (src/generated is gitignored and not in the build
+# context); the seed imports it from ../src/generated/prisma/client.
+ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
+RUN node node_modules/prisma/build/index.js generate
 
 # ---- runtime ---------------------------------------------------------------
 FROM node:24-alpine AS runner

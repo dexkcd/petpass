@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Card, PageHeader } from "@/components/ui/card";
 import { db } from "@/lib/db";
 
+// Admin data comes from the database; never prerender at build time.
+export const dynamic = "force-dynamic";
+
 export default async function AdminHome() {
   const [pendingClinics, verifiedClinics, users, pets, bookings] = await Promise.all([
     db.clinic.count({ where: { status: "PENDING" } }),

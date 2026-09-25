@@ -2,6 +2,10 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { db } from "@/lib/db";
 
+// Category chips come from the database, which is not reachable at image
+// build time, so render this page per request instead of prerendering it.
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const categories = await db.serviceCategory.findMany({ where: { parentId: null }, orderBy: { sortOrder: "asc" } });
   return (
