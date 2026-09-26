@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOutAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
+import { BrandMark, NAV_ICONS, type NavIconKey } from "@/components/ui/icons";
 
-export type NavItem = { href: string; label: string; icon?: string };
+export type NavItem = { href: string; label: string; icon?: NavIconKey };
 
 export function DashboardShell({
   title,
@@ -21,22 +22,25 @@ export function DashboardShell({
       <aside className="border-b border-border bg-card md:w-60 md:border-b-0 md:border-r">
         <div className="flex items-center justify-between px-4 py-4 md:block">
           <Link href="/" className="flex items-center gap-2 font-bold">
-            <span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">🐾</span>
+            <BrandMark />
             PetPass
           </Link>
           <p className="text-xs text-muted md:mt-2">{title}</p>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-col md:pb-4">
-          {items.map((item) => (
+          {items.map((item) => {
+            const Icon = item.icon ? NAV_ICONS[item.icon] : null;
+            return (
             <Link
               key={item.href}
               href={item.href}
               className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100"
             >
-              {item.icon ? <span aria-hidden>{item.icon}</span> : null}
+              {Icon ? <Icon aria-hidden className="size-4 text-muted" /> : null}
               {item.label}
             </Link>
-          ))}
+            );
+          })}
         </nav>
         <div className="hidden border-t border-border px-4 py-3 md:block">
           <p className="truncate text-xs text-muted">{userLabel}</p>

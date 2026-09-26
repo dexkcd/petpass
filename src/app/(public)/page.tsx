@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
+import { CategoryIcon } from "@/components/ui/icons";
+import { ShieldCheck, Stethoscope, Turtle } from "lucide-react";
 import { db } from "@/lib/db";
 
 // Category chips come from the database, which is not reachable at image
@@ -32,8 +34,8 @@ export default async function HomePage() {
         <h2 className="mb-4 text-xl font-semibold">Browse by service</h2>
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
-            <Link key={c.id} href={`/search?category=${c.slug}`} className="rounded-full border border-border bg-card px-4 py-2 text-sm hover:border-primary">
-              {c.icon ? `${c.icon} ` : ""}
+            <Link key={c.id} href={`/search?category=${c.slug}`} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm hover:border-primary">
+              <CategoryIcon icon={c.icon} kind={c.kind} className="size-4 text-primary" />
               {c.name}
             </Link>
           ))}
@@ -42,14 +44,14 @@ export default async function HomePage() {
 
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:grid-cols-3">
         {[
-          { icon: "🩺", title: "Book in minutes", body: "See live availability, book an online video consult or an in-person visit, and get a meeting link when the clinic confirms." },
-          { icon: "🦎", title: "Specialists for every pet", body: "From physiotherapy and behaviour to reptile, avian and small-mammal care, find the right expert, not just the nearest one." },
-          { icon: "🔐", title: "One record, shared on your terms", body: "Vaccinations, medications, conditions and visit notes in one place. Grant a clinic access, and revoke it whenever you like." },
+          { Icon: Stethoscope, title: "Book in minutes", body: "See live availability, book an online video consult or an in-person visit, and get a meeting link when the clinic confirms." },
+          { Icon: Turtle, title: "Specialists for every pet", body: "From physiotherapy and behaviour to reptile, avian and small-mammal care, find the right expert, not just the nearest one." },
+          { Icon: ShieldCheck, title: "One record, shared on your terms", body: "Vaccinations, medications, conditions and visit notes in one place. Grant a clinic access, and revoke it whenever you like." },
         ].map((f) => (
           <div key={f.title} className="rounded-xl border border-border bg-card p-6">
-            <p className="text-3xl" aria-hidden>
-              {f.icon}
-            </p>
+            <span aria-hidden className="grid size-11 place-items-center rounded-lg bg-teal-50 text-primary">
+              <f.Icon className="size-6" />
+            </span>
             <h3 className="mt-3 font-semibold">{f.title}</h3>
             <p className="mt-1 text-sm text-muted">{f.body}</p>
           </div>

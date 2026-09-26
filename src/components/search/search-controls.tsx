@@ -5,6 +5,8 @@ import { useState, useTransition } from "react";
 import { MAPS_API_KEY, MapsProvider } from "@/components/maps/maps-provider";
 import { PlacesInput } from "@/components/maps/places-input";
 import { Button } from "@/components/ui/button";
+import { CategoryIcon } from "@/components/ui/icons";
+import { LocateFixed } from "lucide-react";
 import { Input, Select } from "@/components/ui/form";
 import { MODE_LABELS, SPECIES_OPTIONS } from "@/lib/labels";
 import type { ServiceMode } from "@/generated/prisma/enums";
@@ -69,7 +71,8 @@ export function SearchControls({ categories, hasLocation }: { categories: Catego
             )}
           </div>
           <Button type="button" variant="outline" onClick={useMyLocation} disabled={pending}>
-            📍 Use my location
+            <LocateFixed aria-hidden className="size-4" />
+            Use my location
           </Button>
         </div>
         {geoError ? <p className="text-xs text-danger">{geoError}</p> : null}
@@ -88,9 +91,9 @@ export function SearchControls({ categories, hasLocation }: { categories: Catego
               key={c.slug}
               type="button"
               onClick={() => update({ category: c.slug })}
-              className={`rounded-full px-3 py-1 text-sm ${category === c.slug ? "bg-primary text-primary-foreground" : "bg-slate-100 hover:bg-slate-200"}`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm ${category === c.slug ? "bg-primary text-primary-foreground" : "bg-slate-100 hover:bg-slate-200"}`}
             >
-              {c.icon ? `${c.icon} ` : ""}
+              <CategoryIcon icon={c.icon} kind={c.kind} className="size-3.5" />
               {c.name}
             </button>
           ))}

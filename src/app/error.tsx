@@ -1,5 +1,6 @@
 "use client";
 
+import { PawPrint } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { reportClientError } from "@/lib/report-client-error";
@@ -12,9 +13,7 @@ export default function ErrorPage({ error, retry }: { error: Error & { digest?: 
   return (
     <main className="flex flex-1 items-center justify-center p-8">
       <div className="max-w-md text-center">
-        <p className="text-5xl" aria-hidden>
-          🐾
-        </p>
+        <PawPrint aria-hidden className="mx-auto size-12 text-primary" />
         <h1 className="mt-4 text-2xl font-bold">Something went wrong on this page</h1>
         <p className="mt-2 text-muted">We&apos;ve been notified. You can try again, or go back to the home page.</p>
         {error.digest ? <p className="mt-2 text-xs text-muted">Reference: {error.digest}</p> : null}

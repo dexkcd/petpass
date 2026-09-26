@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { deleteCategoryAction } from "@/actions/admin";
 import { CategoryForm } from "@/components/admin/category-form";
+import { CategoryIcon } from "@/components/ui/icons";
 import { Card, CardTitle, PageHeader } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { db } from "@/lib/db";
@@ -30,8 +31,8 @@ export default async function CategoriesPage() {
         {categories.map((c) => (
           <details key={c.id} className="rounded-xl border border-border bg-card">
             <summary className="flex cursor-pointer items-center justify-between px-5 py-3 text-sm">
-              <span className="font-medium">
-                {c.icon ? `${c.icon} ` : ""}
+              <span className="flex items-center gap-2 font-medium">
+                <CategoryIcon icon={c.icon} kind={c.kind} className="text-primary" />
                 {c.parentId ? "↳ " : ""}
                 {c.name} <span className="font-normal text-muted">· {KIND_LABELS[c.kind]} · /{c.slug}</span>
               </span>

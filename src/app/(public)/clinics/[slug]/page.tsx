@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LazyClinicMap } from "@/components/maps/lazy-clinic-map";
 import { ButtonLink } from "@/components/ui/button";
+import { CategoryIcon } from "@/components/ui/icons";
+import { Globe, Phone } from "lucide-react";
 import { Alert, Badge, Card, CardTitle } from "@/components/ui/card";
 import { getSessionUser } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
@@ -75,13 +77,15 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
           {clinic.phone ? (
-            <a href={`tel:${clinic.phone}`} className="rounded-lg border border-border bg-card px-3 py-2 hover:bg-slate-50">
-              📞 {clinic.phone}
+            <a href={`tel:${clinic.phone}`} className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 hover:bg-slate-50">
+              <Phone aria-hidden className="size-4 text-primary" />
+              {clinic.phone}
             </a>
           ) : null}
           {clinic.website ? (
-            <a href={clinic.website} target="_blank" rel="noreferrer" className="rounded-lg border border-border bg-card px-3 py-2 hover:bg-slate-50">
-              🌐 Website
+            <a href={clinic.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 hover:bg-slate-50">
+              <Globe aria-hidden className="size-4 text-primary" />
+              Website
             </a>
           ) : null}
         </div>
@@ -102,8 +106,8 @@ export default async function ClinicPage({ params }: { params: Promise<{ slug: s
                   {g.services.map((s) => (
                     <li key={s.id} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="font-medium">
-                          {s.category.icon ? `${s.category.icon} ` : ""}
+                        <p className="flex items-center gap-2 font-medium">
+                          <CategoryIcon icon={s.category.icon} kind={s.category.kind} className="text-primary" />
                           {s.name}
                         </p>
                         <p className="text-sm text-muted">

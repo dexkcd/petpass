@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOutAction } from "@/actions/auth";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { BrandMark } from "@/components/ui/icons";
 import { getSessionUser, homeForRole } from "@/lib/auth-helpers";
 
 export async function SiteHeader() {
@@ -9,7 +10,7 @@ export async function SiteHeader() {
     <header className="border-b border-border bg-card">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
-          <span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">🐾</span>
+          <BrandMark />
           PetPass
         </Link>
         <nav className="flex items-center gap-2 text-sm">

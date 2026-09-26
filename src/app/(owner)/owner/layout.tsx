@@ -9,10 +9,10 @@ export default async function OwnerLayout({ children }: { children: ReactNode })
       title="Pet owner"
       userLabel={user.email ?? user.name ?? ""}
       items={[
-        { href: "/owner", label: "Overview", icon: "🏠" },
-        { href: "/owner/pets", label: "My pets", icon: "🐾" },
-        { href: "/owner/bookings", label: "Bookings", icon: "📅" },
-        { href: "/search", label: "Find a vet", icon: "🔎" },
+        { href: "/owner", label: "Overview", icon: "home" },
+        { href: "/owner/pets", label: "My pets", icon: "paw" },
+        { href: "/owner/bookings", label: "Bookings", icon: "calendar" },
+        { href: "/search", label: "Find a vet", icon: "search" },
       ]}
     >
       {children}

@@ -9,13 +9,13 @@ export default async function ProviderLayout({ children }: { children: ReactNode
       title="Clinic / provider"
       userLabel={user.email ?? user.name ?? ""}
       items={[
-        { href: "/provider", label: "Today", icon: "🏠" },
-        { href: "/provider/bookings", label: "Bookings", icon: "📅" },
-        { href: "/provider/patients", label: "Patients", icon: "🐾" },
-        { href: "/provider/services", label: "Services", icon: "🧾" },
-        { href: "/provider/availability", label: "Availability", icon: "🕒" },
-        { href: "/provider/staff", label: "Staff", icon: "👥" },
-        { href: "/provider/clinic", label: "Clinic profile", icon: "🏥" },
+        { href: "/provider", label: "Today", icon: "home" },
+        { href: "/provider/bookings", label: "Bookings", icon: "calendar" },
+        { href: "/provider/patients", label: "Patients", icon: "paw" },
+        { href: "/provider/services", label: "Services", icon: "receipt" },
+        { href: "/provider/availability", label: "Availability", icon: "clock" },
+        { href: "/provider/staff", label: "Staff", icon: "users" },
+        { href: "/provider/clinic", label: "Clinic profile", icon: "hospital" },
       ]}
     >
       {children}

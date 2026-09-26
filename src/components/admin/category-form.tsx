@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { upsertCategoryAction } from "@/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Field, FormError, FormSuccess, Input, Select } from "@/components/ui/form";
+import { CATEGORY_ICONS, CATEGORY_ICON_KEYS, CategoryIcon } from "@/components/ui/icons";
 import { KIND_LABELS } from "@/lib/labels";
 import type { ServiceKind } from "@/generated/prisma/enums";
 
@@ -52,8 +53,18 @@ export function CategoryForm({
         <Field label="Sort order" htmlFor={`cat-sort-${initial?.id ?? "new"}`} errors={errors?.sortOrder}>
           <Input id={`cat-sort-${initial?.id ?? "new"}`} name="sortOrder" type="number" min={0} defaultValue={initial?.sortOrder ?? 0} />
         </Field>
-        <Field label="Icon (emoji)" htmlFor={`cat-icon-${initial?.id ?? "new"}`} errors={errors?.icon}>
-          <Input id={`cat-icon-${initial?.id ?? "new"}`} name="icon" maxLength={8} defaultValue={initial?.icon ?? ""} />
+        <Field label="Icon" htmlFor={`cat-icon-${initial?.id ?? "new"}`} errors={errors?.icon}>
+          <div className="flex items-center gap-2">
+            <CategoryIcon icon={initial?.icon} kind={initial?.kind} className="size-5 text-primary" />
+            <Select id={`cat-icon-${initial?.id ?? "new"}`} name="icon" defaultValue={initial?.icon && initial.icon in CATEGORY_ICONS ? initial.icon : ""}>
+              <option value="">Default for kind</option>
+              {CATEGORY_ICON_KEYS.map((key) => (
+                <option key={key} value={key}>
+                  {CATEGORY_ICONS[key].label}
+                </option>
+              ))}
+            </Select>
+          </div>
         </Field>
       </div>
       <Button type="submit" size="sm" disabled={pending}>

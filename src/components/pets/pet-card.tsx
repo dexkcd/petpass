@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { SPECIES_EMOJI, SPECIES_LABELS } from "@/lib/labels";
+import { SpeciesIcon } from "@/components/ui/icons";
+import { SPECIES_LABELS } from "@/lib/labels";
 import type { Species } from "@/generated/prisma/enums";
 
 export function PetAvatar({ species, size = "md" }: { species: Species; size?: "sm" | "md" | "lg" }) {
-  const sizes = { sm: "h-8 w-8 text-lg", md: "h-12 w-12 text-2xl", lg: "h-20 w-20 text-4xl" };
+  const sizes = { sm: "size-8", md: "size-12", lg: "size-20" };
+  const iconSizes = { sm: "size-4", md: "size-6", lg: "size-10" };
   return (
-    <span aria-hidden className={`grid shrink-0 place-items-center rounded-full bg-teal-50 ${sizes[size]}`}>
-      {SPECIES_EMOJI[species]}
+    <span aria-hidden className={`grid shrink-0 place-items-center rounded-full bg-teal-50 text-primary ${sizes[size]}`}>
+      <SpeciesIcon species={species} className={iconSizes[size]} />
     </span>
   );
 }

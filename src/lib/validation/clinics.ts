@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { MembershipRole, ServiceKind, ServiceMode, Species } from "@/generated/prisma/enums";
 import { isValidTimeZone } from "@/lib/utils";
+import { CATEGORY_ICON_KEYS } from "@/components/ui/icons";
 
 const optionalText = (max: number) => z.string().trim().max(max).optional();
 
@@ -60,5 +61,5 @@ export const CategorySchema = z.object({
   kind: z.enum(ServiceKind),
   parentId: z.string().optional(),
   sortOrder: z.coerce.number().int().min(0).max(10000).default(0),
-  icon: optionalText(8),
+  icon: z.enum(CATEGORY_ICON_KEYS as [string, ...string[]]).optional(),
 });

@@ -11,17 +11,6 @@ export const SPECIES_LABELS: Record<Species, string> = {
   OTHER: "Other",
 };
 
-export const SPECIES_EMOJI: Record<Species, string> = {
-  DOG: "🐶",
-  CAT: "🐱",
-  BIRD: "🦜",
-  REPTILE: "🦎",
-  SMALL_MAMMAL: "🐹",
-  FISH: "🐠",
-  HORSE: "🐴",
-  OTHER: "🐾",
-};
-
 export const SEX_LABELS: Record<Sex, string> = {
   MALE: "Male",
   FEMALE: "Female",

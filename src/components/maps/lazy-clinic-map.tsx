@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ClinicMap, type MapClinic } from "@/components/maps/clinic-map";
 import { MAPS_API_KEY } from "@/components/maps/maps-provider";
+import { MapPin } from "lucide-react";
 
 /**
  * Clinic location card. The interactive Google Map is only loaded when the
@@ -31,7 +32,10 @@ export function LazyClinicMap({ clinic, address }: { clinic: MapClinic; address:
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <p className="text-sm font-medium">📍 {address}</p>
+      <p className="flex items-start gap-2 text-sm font-medium">
+        <MapPin aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+        {address}
+      </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <a href={directions} target="_blank" rel="noreferrer" className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground">
           Get directions
